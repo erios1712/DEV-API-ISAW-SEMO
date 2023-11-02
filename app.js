@@ -2,12 +2,14 @@ import express from "express";
 import cors from "cors";
 import upload from "express-fileupload";
 import { create } from "express-handlebars";
+import morgan from "morgan";
 
 //IMPORTACIÓN RUTAS DE VISTA
-// import viewRoutes from "./routes/views.routes.js";
+import viewRoutes from "./routes/views.routes.js";
 
 //IMPORTACIÓN RUTAS DE ENDPOINTS
 import dataRoutes from "./routes/data.routes.js";
+import connectionRoutes from "./routes/connection.routes.js";
 
 import * as path from "path";
 import { fileURLToPath } from "url";
@@ -17,6 +19,7 @@ const app = express();
 
 //middlewares generales
 app.use(express.json());  //procesar json
+app.use(morgan("tiny"));
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 app.use(upload()); //procesar form data
@@ -35,21 +38,22 @@ app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
 app.set("views", path.resolve(__dirname, "./views"));
 
-
 //FIN CONFIGURACIÓN DE EXPRESS HANDLEBARS
 
 //RUTA DE VISTAS
 
-// app.use("/", viewRoutes);
+app.use("/", viewRoutes);
 
 // RUTA DE ENDPOINTS
 
 app.use("/api/v1/registros", dataRoutes);
+app.use("/api/v1/connection", connectionRoutes);
+
 
 //VISTA DE VISTA NOT FOUND
-app.get("*", (req, res) => {
-    res.render("notFound");
-});
+// app.get("*", (req, res) => {
+//     res.render("notFound");
+// });
 
 export default app;
 
