@@ -13,6 +13,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({path: path.resolve(__dirname, "./.env")});
 
 let ipIed = process.env.IP_IED;
+let firstReg = process.env.FIRST_REG;
 
 const main = async () => {
 
@@ -26,7 +27,7 @@ client.setID(1);
 // on device number 1. and log the values to the console.
 var newArr = [];
 setInterval(async function() {   
-    client.readHoldingRegisters(0, 10, function(err, data) {
+    client.readHoldingRegisters(firstReg, 10, function(err, data) {
         console.log(err);
         console.log(data.data);
         newArr = [...data.data];
