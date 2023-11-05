@@ -10,6 +10,7 @@ import viewRoutes from "./routes/views.routes.js";
 //IMPORTACIÓN RUTAS DE ENDPOINTS
 import dataRoutes from "./routes/data.routes.js";
 import connectionRoutes from "./routes/connection.routes.js";
+import loginRoutes from "./routes/login.routes.js";
 
 import * as path from "path";
 import { fileURLToPath } from "url";
@@ -46,8 +47,10 @@ app.use("/", viewRoutes);
 
 // RUTA DE ENDPOINTS
 
-app.use("/api/v1/registros", dataRoutes);
+app.use("/api/v1/registers/temperatures", dataRoutes);
 app.use("/api/v1/connection", connectionRoutes);
+app.use("/api/v1/login", loginRoutes);
+
 
 
 //VISTA DE VISTA NOT FOUND

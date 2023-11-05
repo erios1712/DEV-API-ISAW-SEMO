@@ -1,7 +1,5 @@
 import app from "./app.js";
-import ModbusRTU from "modbus-serial";
 import sequelize from "./database/database.js"
-import Prueba from "./models/prueba.model.js";
 
 //configuracion dotenv
 import dotenv from "dotenv";
@@ -12,8 +10,6 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({path: path.resolve(__dirname, "./.env")});
 
-let ipIed = process.env.IP_IED;
-let firstReg = process.env.FIRST_REG;
 
 const main = async () => {
     try {

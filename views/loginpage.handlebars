@@ -1,0 +1,87 @@
+<style>
+    .bd-placeholder-img {
+        font-size: 1.125rem;
+        text-anchor: middle;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        user-select: none;
+    }
+
+    @media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+          font-size: 3.5rem;
+        }
+    }
+
+    .form-signin {
+    width: 100%;
+    max-width: 370px;
+    padding: 15px;
+    margin: auto;
+    }
+
+    #divBodyLogin {
+        display: flex;
+        align-items: center;
+        padding-top: 40px;
+        padding-bottom: 40px;
+        margin-top: 200px;       
+    }
+</style>
+
+<div id="divBodyLogin">
+    <div class="form-signin text-center">
+        <div class="col-md-5 ps-0 d-none d-md-block m-auto">
+            
+            <div class="form-left h-100 text-dark text-center">
+                <img src="https://hbse.pe/hbse/wp-content/uploads/2016/12/logotipo-hbse.jpg" style="width:100%">                              
+            </div>
+        </div>
+        <form id="loginForm">
+        <div class="my-3">
+            <h1 class="h3 mb-3 fw-normal">Demo API Intellisaw</h1>
+        </div>
+        <div class="form-floating">
+        <input type="email" class="form-control" id="floatingInput" placeholder="user@example.com" name="email">
+        <label for="floatingInput">Email usuario</label>
+        </div>
+        <div class="form-floating">
+        <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
+        <label for="floatingPassword">Password</label>
+        </div><br>
+        
+        <button class="w-100 btn btn-lg btn-light border" type="submit">Iniciar Sesión</button>
+        <p class="mt-5 mb-3 text-muted"></p>
+    </form>
+    </div>
+</div>
+
+
+{{!-- script para envio de formulario de login mediante form data (modulo express-update) --}}
+
+<script>
+    let loginForm = document.getElementById("loginForm");
+
+    loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        try{
+            let data = new FormData(loginForm);
+            let response = await fetch("/api/v1/login",{
+                method: "POST",
+                body: data
+            })
+
+            let result = await response.json();
+            if(result.code == 200){
+                alert(result.message);
+                localStorage.setItem("token", result.token);
+                location.href = "/dashboardMB?token="+ result.token
+            }else {
+                 alert(result.message);
+            }
+
+        }catch(error){
+            alert("Error en login de usuario.")
+        }
+    })
+</script>
