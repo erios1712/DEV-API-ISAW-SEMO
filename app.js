@@ -47,7 +47,7 @@ app.use("/", viewRoutes);
 
 // RUTA DE ENDPOINTS
 
-app.use("/api/v1/registers/temperatures", dataRoutes);
+app.use("/api/v1/registers", dataRoutes);
 app.use("/api/v1/connection", connectionRoutes);
 app.use("/api/v1/login", loginRoutes);
 

@@ -31,14 +31,14 @@
                 </div>
     
                 <div class="mb-3">
-                  <label for="secPolling" class="form-label"><b>Frecuencia de polling:</b></label>
+                  <label for="secPolling" class="form-label"><b>Frecuencia de polling (ms):</b></label>
                   <input type="text" class="form-control bg-dark text-white" id="secPolling" placeholder="min 5000" name="freqpolling">
                 </div>
 
                 <div class="d-grid gap-2">
-                  <button type="submit" class="btn btn-success mb-3">Conectar</button>
-                  <button type="button" class="btn btn-danger mb-3" disabled>Terminar conexión</button>                    
-                </div>    
+                  <button type="submit" class="btn btn-success mb-3">Conectar</button>                   
+                </div> 
+
             </form>
         </div>
 
@@ -47,9 +47,9 @@
                 <div class="card-body">
                   <h5 class="card-title mb-3">Informacion</h5>
                   <p class="card-text mb-3"><b>Status:</b></p>
-                  <p class="card-text mb-3">conectado</p>
-                  <p class="card-text mb-3"><b>Tiempo de conexión:</b></p>
-                  <p class="card-text mb-3">1:08:49</p>
+                  <p class="card-text mb-3" id="connStatus">Actualizando información...</p>
+                  <p class="card-text mb-3"><b>Tiempo transcurrido:</b></p>
+                  <p class="card-text mb-3" id="timeConn">Actualizando información...</p>
                 </div>                
             </div>            
         </div>
@@ -66,10 +66,15 @@
 
 <script>
     let modbusForm = document.getElementById("modbusForm");
+    let connStatus = document.getElementById("connStatus");
+    let timeConn = document.getElementById("timeConn");
+    let deviceIP = document.getElementById("deviceIP");
+    let devicePort = document.getElementById("tcpport");
+    let deviceID = document.getElementById("slaveID");
 
     modbusForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-        try{
+        try{            
             let data = new FormData(modbusForm);
             let response = await fetch("/api/v1/connection",{
                 method: "POST",
@@ -79,14 +84,61 @@
             let result = await response.json();
             if(result.code == 200){
               console.log(result.message);
-            //    localStorage.setItem("token", result.token);
-            //    location.href = "/ordermonitor?token="+ result.token
-            }else {
+            }else if(result.code == 400) {
+              alert(result.message);
+            }else{
               alert(result.message);
             }
         }catch(error){
             console.log("Error.");
         }
-    }
-    )
+    })
+
+window.addEventListener("load", async function(event){
+  var updateConnStatus = setInterval(async () => {
+      try{            
+            let response = await fetch("/api/v1/registers/connstatus");
+
+            let result = await response.json();
+            console.log(result);
+            
+
+            if(result.connection[0].conn == true){
+              let connDate = new Date(result.connection[0].time);
+              let actualDate = new Date();
+              let diff = actualDate - connDate.getTime();
+              connStatus.innerHTML = `conectado`;
+              let days =  Math.floor(diff / (1000 * 60 * 60 * 24));
+              let hours =  Math.floor(((diff - (days * 1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+              let minutes =  Math.floor((diff - (days * 1000 * 60 * 60 * 24) - (hours * 1000 * 60 * 60)) / (1000 * 60));
+              let seconds =  Math.floor((diff - ((days * 1000 * 60 * 60 * 24) + (hours * 1000 * 60 * 60) + (minutes * 1000 * 60 ))) / (1000));
+              timeConn.innerText = `${days} días, ${hours} horas : ${minutes} min : ${seconds} secs.`;
+              deviceIP.value = result.connection[0].ip;
+              devicePort.value = result.connection[0].port;
+              deviceID.value = result.connection[0].modbusid;
+
+            } else{
+              let connDate = new Date(result.connection[0].time);
+              let actualDate = new Date();
+              let diff = actualDate - connDate.getTime();
+              connStatus.innerHTML = `desconectado`;
+              let days =  Math.floor(diff / (1000 * 60 * 60 * 24));
+              let hours =  Math.floor(((diff - (days * 1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+              let minutes =  Math.floor((diff - (days * 1000 * 60 * 60 * 24) - (hours * 1000 * 60 * 60)) / (1000 * 60));
+              let seconds =  Math.floor((diff - ((days * 1000 * 60 * 60 * 24) + (hours * 1000 * 60 * 60) + (minutes * 1000 * 60 ))) / (1000));
+              timeConn.innerText = `${days} días, ${hours} horas : ${minutes} min : ${seconds} secs.`;
+              deviceIP.value = result.connection[0].ip;
+              devicePort.value = result.connection[0].port;
+              deviceID.value = result.connection[0].modbusid;
+
+            }          
+        }catch(error){
+          //connStatus.innerText = `informacion no disponible...`;
+          console.log("Error.");
+        }
+    }, 5000);
+} )
+
+
+
 </script>
